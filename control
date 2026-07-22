@@ -3,7 +3,7 @@ Name: CardAutoReply
 Version: 0.0.1
 Architecture: iphoneos-arm64
 Description: 抖音私信「自动回复卡片」
-Author: h7ang0
-Maintainer: h7ang0
+Author: H7ang0 <H7ang0@gmail.com>
+Maintainer: H7ang0 <H7ang0@gmail.com>
 Section: Tweaks
 Depends: mobilesubstrate

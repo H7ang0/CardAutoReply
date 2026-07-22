@@ -1,76 +1,67 @@
-# CardAutoReply — 抖音私信「自动回复卡片」
+**한국어** · [中文](README.zh.md)
 
-**收到对方私信时，按规则自动回复一张链接卡片**。完全用抖音**原生类**收发。
+# CardAutoReply — 더우인(抖音) DM 「자동 응답 카드」
+
+**상대방에게 DM을 받으면 규칙에 따라 링크 카드를 자동으로 회신합니다.** 전부 더우인 **네이티브 클래스**로 송수신합니다.
 
 <p align="center">
-  <img src="screenshots/settings.png" width="270" alt="设置页">
+  <img src="screenshots/settings.png" width="270" alt="설정 화면">
   &nbsp;&nbsp;
-  <img src="screenshots/edit.png" width="270" alt="卡片编辑页（带实时预览）">
+  <img src="screenshots/edit.png" width="270" alt="카드 편집 화면(실시간 미리보기)">
 </p>
 
-- 关键词命中优先，未命中走「默认卡片」（关键词留空的规则），支持**精准 / 模糊**匹配
-- 多条规则，每条独立配置：关键词 / 封面URL / 标题 / 描述 / 跳转链接
-- **每会话冷却 N 分钟**，防刷屏、避风控
-- **全局触发**：hook TIMX SDK 全局单例 `TIMXOThirdPartyConversationNotifier`，任何会话来消息都能自动回，不用打开聊天页
-- 发送走抖音 IM SDK：`IESIMSendMessageModel`(messageType=26 链接卡片) + `IESIMMessageSender`
-- iOS 26 液态玻璃设置页，卡片编辑带实时预览
+- 키워드 우선 매칭, 미매칭 시 「기본 카드」(키워드 비움 규칙) 사용, **정확 / 부분(모호)** 매칭 지원
+- 여러 규칙, 각각 개별 설정: 키워드 / 커버 URL / 제목 / 설명 / 이동 링크
+- **대화별 N분 쿨다운** — 도배 방지 / 리스크 컨트롤 회피
+- **전역 트리거**: TIMX SDK 전역 싱글턴 `TIMXOThirdPartyConversationNotifier` 후킹, 어느 대화에 메시지가 와도 채팅 화면을 열지 않고 자동 응답
+- 전송은 더우인 IM SDK 사용: `IESIMSendMessageModel`(messageType=26 링크 카드) + `IESIMMessageSender`
+- iOS 26 리퀴드 글래스 설정 화면, 카드 편집 시 실시간 미리보기
 
-## 文件
+> ⚠️ **DouyinHelper와 동시 설치 불가** (동일 프로세스 훅 충돌). 본 모듈은 송수신과 설정 진입점을 자체 내장하여 독립 실행됩니다.
 
-| 文件 | 作用 |
+## 파일
+
+| 파일 | 역할 |
 |---|---|
-| `Tweak.xm` | hook 收私信 + 匹配/冷却/发送逻辑、存储 `AHRStore` |
-| `Editor.mm` | 设置界面 `AHRCardAutoReplyEditor`（`+present` 呼出） |
-| `PanelIntegration.xm` | 把入口做成聊天「+」面板(`AWEIMPlusPanelView`)里的一个九宫格项 |
-| `Makefile` / `control` / `CardAutoReply.plist` | Theos 构建（注入进程 `Aweme`，按类 `AWEIMMessageListDataComponent` 过滤） |
+| `Tweak.xm` | DM 수신 훅 + 매칭/쿨다운/전송 로직, `AHRStore` 저장 |
+| `Editor.mm` | 설정 화면 `AHRCardAutoReplyEditor` (`+present` 로 호출) |
+| `PanelIntegration.xm` | 채팅 「+」 패널(`AWEIMPlusPanelView`) 그리드 항목으로 진입점 추가 |
+| `Makefile` / `control` / `CardAutoReply.plist` | Theos 빌드 (`Aweme` 프로세스 주입, `AWEIMMessageListDataComponent` 클래스로 필터) |
 
-## 编译
+## 빌드
 
-需要 [Theos](https://theos.dev)（已装在 `~/theos`）。**用附带的 `build.sh`**（它会自动设好
-`THEOS` 和 `DEVELOPER_DIR`——后者是为绕过 Xcode 16/26 上 `xcodebuild -sdk '' -find make` 崩溃的坑）：
+[Theos](https://theos.dev) 필요. **동봉된 `build.sh` 사용** (`THEOS` 와 `DEVELOPER_DIR` 자동 설정 — 후자는 Xcode 16/26 의 `xcodebuild -sdk '' -find make` 크래시 우회용):
 
 ```bash
 cd CardAutoReply
-./build.sh                  # 只编译
-./build.sh package          # 打 rootful .deb  -> ./packages/
-./build.sh package rootless # 打 rootless .deb（TrollStore/Dopamine 等新越狱）
+./build.sh                  # 컴파일만
+./build.sh package          # rootful .deb 빌드 -> ./packages/
+./build.sh package rootless # rootless .deb (TrollStore/Dopamine 등)
 ./build.sh clean
 ```
 
-> 若你坚持直接用 `make`，必须先在**当前 shell 环境**里设两个变量（写进 Makefile 无效）：
+> `make` 를 직접 쓰려면 현재 셸 환경에 두 변수를 먼저 설정 (Makefile 에 써도 무효):
 > `export THEOS=~/theos DEVELOPER_DIR=/Library/Developer/CommandLineTools`
 
-产物已验证可正常编译/打包（arm64 + arm64e）。装到设备：把 `./packages/*.deb` 用
-Filza / `dpkg -i` / 包管理器安装，或 `./build.sh package install`（需配 `THEOS_DEVICE_IP`）。
+arm64 + arm64e 컴파일/패키징 검증됨. 기기 설치: `./packages/*.deb` 를 Filza / `dpkg -i` / 패키지 매니저로 설치.
 
-> 本模块是**独立 dylib**，注入抖音进程后用抖音自己的类收发消息，不依赖任何第三方 dylib。
+## 사용법
 
-## 使用
+1. 아무 DM 대화에 들어가 입력창의 **「+」** 패널을 펼치고 그리드에서 **「자동 응답 카드」** 를 눌러 설정 화면 진입
+2. 「자동 응답 카드 사용」 켜기
+3. 「+」 로 규칙 추가, 키워드와 카드 내용 입력; **키워드 비움 = 기본 카드**
+4. 「대화별 쿨다운(분)」 설정, 기본 5
+5. 상대가 규칙에 매칭되는 메시지를 보내면 자동으로 카드 회신
 
-1. 进入任意私信会话，点输入框左/右的 **「+」** 展开面板，九宫格里点 **「自动回复卡片」** 进入设置页
-2. 打开「启用自动回复卡片」
-3. 「+」添加规则，填关键词与卡片内容；**关键词留空的那条 = 默认卡片**
-4. 设「每会话冷却(分钟)」，默认 5
-5. 对方发消息命中规则即自动回卡片
+## 설명 / 제약
 
-## ⚠️ 上机核对清单（代码已编译通过，但收发是抖音私有流程，装机后确认这几点）
+- **전역 트리거**: TIMX SDK 전역 싱글턴 `TIMXOThirdPartyConversationNotifier -didInsertNewMessages:belongingConversation:` 후킹, 모든 대화의 새 메시지에 반응 (채팅 화면 열 필요 없음).
+- **iOS 제약**: 탈옥 트윅은 더우인 프로세스 내부에 기생합니다. 더우인이 시스템에 의해 **suspend / 종료**되면 트윅도 실행되지 않아 자동 응답이 불가합니다. 더우인이 **실행 중**(포그라운드 또는 짧은 백그라운드)일 때만 동작합니다.
+- 카드의 커버 URL / 링크는 공개 https 직링크 권장.
+- 쿨다운 기록은 `NSUserDefaults`(`AHRCardAutoReply.lastSend`)에 저장, 재시작 후에도 유지.
 
-1. **卡片发出但显示红叹号 / 发送失败** → `AHRSendCard()` 用 `IESIMSendMessageModel`(messageType=26,
-   content={cover_url,title,desc,link_url}) + `IESIMMessageSender asyncSendMessage:completion:`。
-   看日志 `[CardAutoReply] ❌ 发送失败: …` 里的错误(风控 / conversationId / 缺字段)。
-2. **自己发消息也被触发** → 方向判断用 `TIMXOMessage.sender == currentUserID`。当前 uid 从
-   `TIMXOThirdPartyConversationNotifier._r`(TIMXSDKInstance) 取，取不到时不拦、靠冷却兜底。
-3. **关键词匹配不到 / 文本不对** → `AHRTIMXText()` 从 `TIMXOMessage.content` 取（默认 `content[@"text"]`，
-   带兜底扫描）。日志打印 `content=…` 校准键名。
-4. **「+」面板里没出现「自动回复卡片」项** → 确认 `AWEIMPlusPanelView` / `AWEIMChatPanelModel`
-   类名未变；日志无异常即应显示在九宫格末尾。
+## 작성자 / 연락처
 
-排查时看设备日志里 `[CardAutoReply]` 前缀的输出。
-
-## 说明 / 边界
-
-- **全局触发**：hook TIMX SDK 全局单例 `TIMXOThirdPartyConversationNotifier -didInsertNewMessages:belongingConversation:`，
-  所有会话新消息都触发，不用打开聊天页。
-- **iOS 限制**：越狱插件寄生在抖音进程内，抖音被系统**挂起 / 杀死**时插件不运行，无法自动回。只在抖音**运行时**（前台或短暂后台）有效。
-- 卡片内容里 `封面URL`/`链接` 建议用公网 https 直链。
-- 冷却记录存在 `NSUserDefaults`（`AHRCardAutoReply.lastSend`），跨重启保留。
+- 작성자: **H7ang0**
+- 이메일: **H7ang0@gmail.com**
+- 라이선스: MIT ([LICENSE](LICENSE) 참고)
