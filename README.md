@@ -1,14 +1,12 @@
 # CardAutoReply — 抖音私信「自动回复卡片」
 
-**收到对方私信时，按规则自动回复一张链接卡片**。完全用抖音**原生类**收发，不依赖任何第三方 dylib。
+**收到对方私信时，按规则自动回复一张链接卡片**。完全用抖音**原生类**收发。
 
 - 关键词命中优先，未命中走「默认卡片」（关键词留空的规则）
 - 多条规则，每条独立配置：关键词 / 封面URL / 标题 / 描述 / 跳转链接
 - **每会话冷却 N 分钟**，防刷屏、避风控
 - 卡片 = 抖音自带 `AWEIMShareH5Message`（`title`/`coverURL`/`desc`/`linkURL`/`isCard`），
   经 `AWEIMSendMessageController` 发送；方向判断用官方 `AWEIMMessage.sendFromMe`
-
-> ⚠️ **不能与 DouyinHelper 同时安装**（同进程 hook 冲突）。本模块自带收发与设置入口，独立运行。
 
 ## 文件
 
