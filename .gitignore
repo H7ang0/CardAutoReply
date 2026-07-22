@@ -1,0 +1,10 @@
+# Theos 构建产物
+.theos/
+packages/
+*.deb
+
+# macOS
+.DS_Store
+
+# 本地/私密配置（以防万一）
+*.local.*

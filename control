@@ -1,0 +1,9 @@
+Package: com.h7ang0.cardautoreply
+Name: CardAutoReply
+Version: 0.0.1
+Architecture: iphoneos-arm64
+Description: 抖音私信「自动回复卡片」
+Author: h7ang0
+Maintainer: h7ang0
+Section: Tweaks
+Depends: mobilesubstrate
