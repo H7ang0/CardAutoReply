@@ -61,5 +61,6 @@ cd CardAutoReply
 ## 作者 / 联系
 
 - 作者：**H7ang0**
+- 问题反馈：**[Telegram @H7ang0_Dev](https://t.me/H7ang0_Dev)**
 - 邮箱：**H7ang0@gmail.com**
 - 许可：MIT（见 [LICENSE](LICENSE)）

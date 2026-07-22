@@ -63,5 +63,6 @@ arm64 + arm64e 컴파일/패키징 검증됨. 기기 설치: `./packages/*.deb` 
 ## 작성자 / 연락처
 
 - 작성자: **H7ang0**
+- 문의 / 버그 제보: **[Telegram @H7ang0_Dev](https://t.me/H7ang0_Dev)**
 - 이메일: **H7ang0@gmail.com**
 - 라이선스: MIT ([LICENSE](LICENSE) 참고)
