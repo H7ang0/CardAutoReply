@@ -2,11 +2,18 @@
 
 **收到对方私信时，按规则自动回复一张链接卡片**。完全用抖音**原生类**收发。
 
-- 关键词命中优先，未命中走「默认卡片」（关键词留空的规则）
+<p align="center">
+  <img src="screenshots/settings.png" width="270" alt="设置页">
+  &nbsp;&nbsp;
+  <img src="screenshots/edit.png" width="270" alt="卡片编辑页（带实时预览）">
+</p>
+
+- 关键词命中优先，未命中走「默认卡片」（关键词留空的规则），支持**精准 / 模糊**匹配
 - 多条规则，每条独立配置：关键词 / 封面URL / 标题 / 描述 / 跳转链接
 - **每会话冷却 N 分钟**，防刷屏、避风控
-- 卡片 = 抖音自带 `AWEIMShareH5Message`（`title`/`coverURL`/`desc`/`linkURL`/`isCard`），
-  经 `AWEIMSendMessageController` 发送；方向判断用官方 `AWEIMMessage.sendFromMe`
+- **全局触发**：hook TIMX SDK 全局单例 `TIMXOThirdPartyConversationNotifier`，任何会话来消息都能自动回，不用打开聊天页
+- 发送走抖音 IM SDK：`IESIMSendMessageModel`(messageType=26 链接卡片) + `IESIMMessageSender`
+- iOS 26 液态玻璃设置页，卡片编辑带实时预览
 
 ## 文件
 
